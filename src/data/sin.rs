@@ -44,6 +44,8 @@ impl SinSource {
         );
         self.offset
             .set(self.offset.get() + 1.0 / (input_dims * num_rows - 1) as f32);
+
+        print(&x_shifted);
         af::sin(&x_shifted)
         // utils::cast(&af::sin(&x_shifted), self.params.dtype)
     }
@@ -75,12 +77,13 @@ mod tests {
     //     plot_array(&y_arr, "sin", 1280, 1280);
     // }
 
-    #[test]
-    fn generate_sin_wave() {
-        let input_dims = 1;
-        let num_rows = 50;
-        let sin_source = SinSource::new(DType::F32);
-        let arr = sin_source.generate_sin_wave(input_dims, num_rows);
-        plot_array(&arr, "generated sin", 1280, 1280);
-    }
+    // #[test]
+    // fn generate_sin_wave() {
+    //     let input_dims = 2;
+    //     let num_rows = 50;
+    //     let sin_source = SinSource::new(DType::F32);
+    //     let arr = sin_source.generate_sin_wave(input_dims, num_rows);
+    //     print(&arr);
+    //     // plot_array(&arr, "generated sin", 1280, 1280);
+    // }
 }

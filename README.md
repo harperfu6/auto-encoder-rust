@@ -1,14 +1,28 @@
 * TODO
 - テストデータ
 	- [x] sinデータ
-- ニューラルネット
+- Sequentialモデル
 	- Model
-		- [ ] インタフェース
-		- [ ] Sequentialモデルの実装
+		- [x] インタフェース
+		- [ ] モデル基本情報の表示
+			- [x] パラメータの表示
+		- [x] Layerの追加
+			- [x] dense
+		- [ ] forward
+		- [ ] backward
+		- [ ] fit (train)
+	- Parameter
+		- [x] 初期化
+		- [x] dense
 	- Layer
-		- [ ] インタフェース
+		- [x] インタフェース
+		- [ ] dense
+			- [x] forward
+			- [ ] backward
 	- Optimizer
 		- [ ] インタフェース
+		- [ ] Adam
 	- 各種関数
-		- [ ] アクティベーション
+		- アクティベーション
+			- [ ] tanh
 		- [ ] loss
