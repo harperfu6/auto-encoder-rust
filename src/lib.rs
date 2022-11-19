@@ -4,6 +4,7 @@ pub mod data;
 pub mod error;
 pub mod initializations;
 pub mod layer;
+pub mod loss;
 pub mod model;
 pub mod optimizer;
 pub mod params;

@@ -1,28 +1,29 @@
-* TODO
+# TODO
 - テストデータ
 	- [x] sinデータ
 - Sequentialモデル
 	- Model
 		- [x] インタフェース
-		- [ ] モデル基本情報の表示
+		- モデル基本情報の表示
 			- [x] パラメータの表示
 		- [x] Layerの追加
 			- [x] dense
-		- [ ] forward
-		- [ ] backward
+		- [x] forward
+		- [x] backward
 		- [ ] fit (train)
 	- Parameter
 		- [x] 初期化
 		- [x] dense
 	- Layer
 		- [x] インタフェース
-		- [ ] dense
+		- [x] dense
 			- [x] forward
-			- [ ] backward
+			- [x] backward
 	- Optimizer
-		- [ ] インタフェース
-		- [ ] Adam
+		- [x] インタフェース
+		- [x] SGD
 	- 各種関数
 		- アクティベーション
-			- [ ] tanh
-		- [ ] loss
+			- [x] tanh
+		- loss
+			- [x] mse

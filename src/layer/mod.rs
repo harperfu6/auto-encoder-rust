@@ -1,11 +1,14 @@
 mod dense;
+use std::sync::{Arc, Mutex};
+
+pub use self::dense::Dense;
 use crate::params::Params;
 use crate::{activations, params};
 use arrayfire::{Array, MatProp};
 
 pub trait Layer {
-    fn forward(&self, params: Params, inputs: &Array<f32>) -> Array<f32>;
-    fn backward(&self, params: Params, delta: &Array<f32>) -> Array<f32>;
+    fn forward(&self, params: Arc<Mutex<Params>>, inputs: &Array<f32>) -> Array<f32>;
+    fn backward(&self, params: Arc<Mutex<Params>>, delta: &Array<f32>) -> Array<f32>;
 }
 
 /// Helper to run f(wx + b) where bias is optional

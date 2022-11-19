@@ -73,7 +73,12 @@ pub trait Model {
     /// # Return Values
     ///
     /// Vector of losses
-    fn backward(self, predictions: &Vec<Array<f32>>, targets: Array<f32>);
+    fn backward(
+        &mut self,
+        predictions: &Vec<Array<f32>>,
+        targets: Array<f32>,
+        loss_indices: Option<&Vec<bool>>,
+    ) -> Vec<f32>;
 
     /// Show model info
     ///
