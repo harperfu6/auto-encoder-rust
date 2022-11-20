@@ -10,23 +10,6 @@ macro_rules! hashmap {
     }};
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn macro_hashmap() {
-        let input_dims = 128;
-        let output_dims = 128;
-        let hm = hashmap!(
-        "activation" => "tanh".to_string(),
-        "input_size" => input_dims.to_string(),
-        "output_size" => output_dims.to_string()
-        );
-        dbg!(hm);
-    }
-}
-
 /// A Helper to return a constant value based on type
 // pub fn constant(dims: Dim4, aftype: DType, val: f32) -> Array<f32> {
 pub fn constant(dims: Dim4, val: f32) -> Array<f32> {
@@ -54,6 +37,16 @@ pub fn constant(dims: Dim4, val: f32) -> Array<f32> {
     // }
 }
 
+/// Convert a vector of elements to a vector of Array
+pub fn vec_to_array(vec_valus: Vec<f32>, dims: Dim4) -> Array<f32> {
+    raw_to_array(vec_valus.as_ref(), dims)
+}
+
+/// Convert a generic vector to an Array
+pub fn raw_to_array(raw_values: &[f32], dims: Dim4) -> Array<f32> {
+    Array::new(raw_values, dims)
+}
+
 // pub fn cast<T: HasAfEnum>(input: &Array<T>, dest_type: DType) -> Array<T> {
 //     if input.get_type() == dest_type {
 //         return input.clone();
@@ -75,3 +68,20 @@ pub fn constant(dims: Dim4, val: f32) -> Array<f32> {
 //         _ => input.cast::<f32>(),
 //     }
 // }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn macro_hashmap() {
+        let input_dims = 128;
+        let output_dims = 128;
+        let hm = hashmap!(
+        "activation" => "tanh".to_string(),
+        "input_size" => input_dims.to_string(),
+        "output_size" => output_dims.to_string()
+        );
+        dbg!(hm);
+    }
+}

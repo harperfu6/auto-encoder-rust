@@ -1,6 +1,7 @@
 # TODO
 - テストデータ
-	- [x] sinデータ
+	- DataSource
+		- [x] sin
 - Sequentialモデル
 	- Model
 		- [x] インタフェース
@@ -10,7 +11,7 @@
 			- [x] dense
 		- [x] forward
 		- [x] backward
-		- [ ] fit (train)
+		- [x] fit (train)
 	- Parameter
 		- [x] 初期化
 		- [x] dense

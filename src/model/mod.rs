@@ -39,7 +39,14 @@ pub trait Model {
     /// # Return Values
     ///
     /// Vector of losses
-    fn fit<T>(self, source: &T, epochs: u64, batch_size: u64) -> Vec<f32>
+    fn fit<T>(
+        &mut self,
+        source: &T,
+        epochs: u64,
+        batch_size: u64,
+        loss_indices: Option<&Vec<bool>>,
+        verbose: bool,
+    ) -> Vec<f32>
     where
         T: DataSouce;
 
@@ -57,7 +64,7 @@ pub trait Model {
     /// # Return Values
     ///
     /// Vector of activated outputs of the model
-    fn forward(self, inputs: &Array<f32>) -> Vec<Array<f32>>;
+    fn forward(&self, inputs: &Array<f32>) -> Vec<Array<f32>>;
 
     /// Calculate the layer gradients and return the loss vector
     ///
@@ -76,7 +83,7 @@ pub trait Model {
     fn backward(
         &mut self,
         predictions: &Vec<Array<f32>>,
-        targets: Array<f32>,
+        targets: &Array<f32>,
         loss_indices: Option<&Vec<bool>>,
     ) -> Vec<f32>;
 

@@ -8,6 +8,7 @@ pub mod loss;
 pub mod model;
 pub mod optimizer;
 pub mod params;
+pub mod plot;
 pub mod utils;
 
 // #[cfg(test)]

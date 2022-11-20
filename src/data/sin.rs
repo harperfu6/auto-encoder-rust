@@ -1,33 +1,23 @@
+use af::{print, Array, DType, Dim4, HasAfEnum};
 use std::cell::Cell;
-
-use af::{print, Array, DType, Dim4};
-use arrayfire::HasAfEnum;
 
 use crate::data::{Data, DataParams, DataSouce};
 
-fn plot_array(values: &Array<f32>, title: &str, window_x: u16, window_y: u16) {
-    assert!(values.dims()[1] == 1);
-
-    let wnd = af::Window::new(window_x as i32, window_y as i32, title.to_string());
-
-    // display till closed
-    loop {
-        wnd.draw_plot2(&af::range::<f32>(values.dims(), 0), &values, None);
-        if wnd.is_closed() == true {
-            break;
-        }
-    }
-}
-
-struct SinSource {
-    params: DataParams,
-    offset: Cell<f32>,
+pub struct SinSource {
+    pub params: DataParams,
+    pub offset: Cell<f32>,
 }
 
 impl SinSource {
-    fn new(dtype: DType) -> SinSource {
+    pub fn new(input_size: u64, batch_size: u64, dtype: DType, max_samples: u64) -> SinSource {
+        let dims = Dim4::new(&[batch_size, input_size, 1, 1]);
         SinSource {
-            params: DataParams { dtypes: dtype },
+            params: DataParams {
+                input_dims: dims,
+                target_dims: dims,
+                dtypes: dtype,
+                num_samples: max_samples,
+            },
             offset: Cell::new(0.0f32),
         }
     }
@@ -51,39 +41,21 @@ impl SinSource {
     }
 }
 
-// impl DataSouce for SinSource {
-//     fn get_train_iter(&self, num_batch: u64) -> Data {}
+impl DataSouce for SinSource {
+    fn info(&self) -> DataParams {
+        self.params.clone()
+    }
 
-//     fn get_test_iter(&self, num_batch: u64) -> Data {}
-// }
+    fn get_train_iter(&self, num_batch: u64) -> Data {
+        let inp = self.generate_sin_wave(self.params.input_dims[1], num_batch);
+        let batch = Data {
+            input: inp.clone(),
+            target: inp.clone(),
+        };
+        batch
+    }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use af::print;
-
-    // #[test]
-    // fn print_array() {
-    //     let values: [f32; 3] = [1.0, 2.0, 3.0];
-    //     let indices = Array::new(&values, Dim4::new(&[3, 1, 1, 1]));
-    //     print(&indices);
-    // }
-
-    // #[test]
-    // fn simple_sin_wage() {
-    //     let x_vec: Vec<f32> = dbg!((0..600).map(|x| -3.14 + ((x as f32) * 0.01)).collect());
-    //     let x_arr: Array<f32> = Array::new(&x_vec, Dim4::new(&[600, 1, 1, 1]));
-    //     let y_arr: Array<f32> = af::sin(&x_arr);
-    //     plot_array(&y_arr, "sin", 1280, 1280);
-    // }
-
-    // #[test]
-    // fn generate_sin_wave() {
-    //     let input_dims = 2;
-    //     let num_rows = 50;
-    //     let sin_source = SinSource::new(DType::F32);
-    //     let arr = sin_source.generate_sin_wave(input_dims, num_rows);
-    //     print(&arr);
-    //     // plot_array(&arr, "generated sin", 1280, 1280);
-    // }
+    fn get_test_iter(&self, num_batch: u64) -> Data {
+        self.get_train_iter(num_batch)
+    }
 }

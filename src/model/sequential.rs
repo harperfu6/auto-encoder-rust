@@ -7,6 +7,7 @@ use crate::optimizer::{Optimizer, SGD};
 use crate::params::{DenseGenerator, ParamManager};
 use crate::utils;
 
+use af::print;
 use arrayfire::Array;
 use itertools::multizip;
 
@@ -60,14 +61,77 @@ impl Model for Sequential {
         }
     }
 
-    fn fit<T>(self, source: &T, epochs: u64, batch_size: u64) -> Vec<f32>
+    fn fit<T>(
+        &mut self,
+        source: &T,
+        epochs: u64,
+        batch_size: u64,
+        loss_indices: Option<&Vec<bool>>,
+        verbose: bool,
+    ) -> Vec<f32>
     where
         T: crate::data::DataSouce,
     {
-        todo!()
+        // some simple data validation check
+        let data_params = source.info();
+        let idims = data_params.input_dims;
+        let tdims = data_params.target_dims;
+        let iters = data_params.num_samples as u64 / batch_size as u64;
+        println!(
+            "\ntrain samples: {:?} | target samples: {:?} | batch size: {}",
+            idims, tdims, batch_size
+        );
+        println!("epochs: {} | iterations[per epoch]: {}", epochs, iters);
+        assert!(
+            idims[0] == tdims[0],
+            "batch sizes for inputs and targets much be equal"
+        );
+        assert!(
+            idims[2] == tdims[2],
+            "sequence lengths for inputs and targets must be equal"
+        );
+        assert!(self.layers.len() > 0, "Need at least one layer to fit!");
+
+        let mut lossvec = Vec::<f32>::new();
+        for epoch in 0..epochs {
+            for iter in 0..iters {
+                if verbose {
+                    print!("\n[epoch: {}][iter: {}]", epoch, iter);
+                }
+                let minibatch = source.get_train_iter(batch_size);
+                assert!(
+                    minibatch.input.dims()[0] == batch_size,
+                    "Ensure that input dims are of batch rows"
+                );
+                assert!(
+                    minibatch.target.dims()[0] == batch_size,
+                    "Ensure that target dims are of batch rows"
+                );
+
+                let batch_input = &minibatch.input;
+                let batch_target = &minibatch.target;
+
+                let mut current_loss_vec = Vec::new();
+                let a_t = self.forward(&batch_input);
+                current_loss_vec = self.backward(&a_t, &batch_target, loss_indices);
+
+                self.optimizer
+                    .update(&mut self.param_manager, batch_size as u64);
+
+                if verbose {
+                    let loss_sum = current_loss_vec.iter().fold(0f32, |sum, val| sum + val);
+                    let avg_loss = loss_sum / current_loss_vec.len() as f32;
+                    print!("{} ", avg_loss);
+                }
+
+                lossvec.extend(current_loss_vec);
+            }
+        }
+
+        lossvec
     }
 
-    fn forward(self, inputs: &Array<f32>) -> Vec<Array<f32>> {
+    fn forward(&self, inputs: &Array<f32>) -> Vec<Array<f32>> {
         let mut activate = inputs.clone();
 
         for i in 0..self.layers.len() {
@@ -85,7 +149,7 @@ impl Model for Sequential {
     fn backward(
         &mut self,
         predictions: &Vec<Array<f32>>,
-        targets: Array<f32>,
+        targets: &Array<f32>,
         loss_indices: Option<&Vec<bool>>,
     ) -> Vec<f32> {
         self.optimizer.setup(self.param_manager.get_all_dims());
