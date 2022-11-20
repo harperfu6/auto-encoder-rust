@@ -12,7 +12,7 @@ fn main() {
     let input_dims = 8;
     let hidden_dims = 2;
     let output_dims = 8;
-    let num_train_samples = 64;
+    let num_train_samples = 128;
     let batch_size = 32;
     let optimizer_type = "SGD";
     let epochs = 5;
@@ -30,10 +30,10 @@ fn main() {
             , "b_init" => "zeros".to_string()
         ],
     );
-    model.info();
+    // model.info();
 
     let source = SinSource::new(input_dims, batch_size, DType::F32, num_train_samples);
     let loss = model.fit::<SinSource>(&source, epochs, batch_size, None, true);
 
-    plot_vec(loss, "Loss vs. Iterations", 512, 512);
+    // plot_vec(loss, "Loss vs. Iterations", 512, 512);
 }

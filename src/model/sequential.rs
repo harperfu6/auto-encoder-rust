@@ -113,6 +113,8 @@ impl Model for Sequential {
 
                 let mut current_loss_vec = Vec::new();
                 let a_t = self.forward(&batch_input);
+                // print(&batch_target);
+                // print(&af::slice(&batch_target, 1));
                 current_loss_vec = self.backward(&a_t, &batch_target, loss_indices);
 
                 self.optimizer

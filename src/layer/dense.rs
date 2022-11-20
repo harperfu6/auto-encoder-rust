@@ -23,11 +23,21 @@ impl Layer for Dense {
             &ltex.activations[0],
         );
 
-        // save inputs/outputs
-        ltex.inputs.push(inputs.clone());
-        ltex.outputs.push(a_t.clone());
+        // parameter manager keeps the output & inputs
+        let current_unroll = ltex.current_unroll;
+        if ltex.inputs.len() > current_unroll {
+            ltex.inputs[current_unroll] = inputs.clone();
+            ltex.outputs[current_unroll] = a_t.clone();
+        } else {
+            // save inputs/outputs
+            ltex.inputs.push(inputs.clone());
+            ltex.outputs.push(a_t.clone());
+        }
 
-        a_t
+        // update locaton in vector
+        ltex.current_unroll += 1;
+
+        a_t.clone()
     }
 
     fn backward(&self, params: Arc<Mutex<Params>>, delta: &Array<f32>) -> Array<f32> {
@@ -42,6 +52,8 @@ impl Layer for Dense {
 
         ltex.deltas[0] = af::add(&ltex.deltas[0], &dw, false);
         ltex.deltas[1] = af::add(&ltex.deltas[1], &db, false);
+
+        ltex.current_unroll -= 1;
 
         af::matmul(&delta_t, &ltex.weights[0], MatProp::NONE, MatProp::TRANS)
     }

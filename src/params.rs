@@ -7,7 +7,7 @@ use crate::{initializations, utils};
 
 macro_rules! check_layer_index_overflow {
     ($self: ident, $layer_index: ident) => {
-        assert!(&$self.layer_storage.len() - 1 > $layer_index);
+        assert!(&$self.layer_storage.len() - 1 >= $layer_index);
     };
 }
 
@@ -55,6 +55,7 @@ pub struct Params {
     pub activations: Vec<String>,
     pub inputs: Vec<Array<f32>>,
     pub outputs: Vec<Array<f32>>,
+    pub current_unroll: usize,
 }
 
 pub struct ParamManager {
@@ -107,6 +108,7 @@ impl ParamManager {
             activations: owned_activations,
             inputs: Vec::new(),
             outputs: Vec::new(),
+            current_unroll: 0,
         })));
     }
 

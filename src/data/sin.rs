@@ -35,7 +35,7 @@ impl SinSource {
         self.offset
             .set(self.offset.get() + 1.0 / (input_dims * num_rows - 1) as f32);
 
-        print(&x_shifted);
+        // print(&x_shifted);
         af::sin(&x_shifted)
         // utils::cast(&af::sin(&x_shifted), self.params.dtype)
     }
@@ -50,7 +50,7 @@ impl DataSouce for SinSource {
         let inp = self.generate_sin_wave(self.params.input_dims[1], num_batch);
         let batch = Data {
             input: inp.clone(),
-            target: inp.clone(),
+            target: inp.copy(),
         };
         batch
     }
